@@ -2,12 +2,13 @@ import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
+import UserType from '../types/auth';
 
 type Props = {}
 
 export default function SignUp({}: Props) {
 
-    const [userFormData, setUserFormData] = useState(
+    const [userFormData, setUserFormData] = useState<Partial<UserType>>(
         {
             firstName: '',
             lastName: '',
