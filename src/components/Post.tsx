@@ -1,16 +1,20 @@
-type PostType = {
-    id: number;
-    body: string;
-    author: {
-        user_id: number;
-        username: string;
-    };
-};
+import Card from 'react-bootstrap/Card'
 
-export default function Post({ post }: { post: PostType }) {
+import PostType from "../types/post";
+
+type PostProps = {
+    post: PostType
+}
+
+export default function Post({ post }: PostProps) {
     return (
-        <p>
-            <b>{post.author.username}</b> -- {post.body}
-        </p>
+        <Card className='my-3'>
+            {/* <Card.Img variant='top' src={post.imageUrl} /> */}
+            <Card.Body>
+                <Card.Title>{ post.title }</Card.Title>
+                <Card.Text>{ post.body }</Card.Text>
+                <Card.Subtitle>Posted at {post.dateCreated} by User #{post.userId}</Card.Subtitle>
+            </Card.Body>
+        </Card>
     );
 }
