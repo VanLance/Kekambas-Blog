@@ -45,7 +45,7 @@ export default function App() {
                     <Route path="/" element={<Home loggedInUser={loggedInUser} />} />
                     <Route path="/posts" element={<PostsView />} />
                     <Route path="/signup" element={<SignUp logUserIn={logUserIn} />} />
-                    <Route path="/login" element={<Login logUserIn={logUserIn}/>} />
+                    <Route path="/login" element={<Login logUserIn={logUserIn} isLoggedIn={isLoggedIn}/>} />
                 </Routes>
             </Container>
         </BrowserRouter>

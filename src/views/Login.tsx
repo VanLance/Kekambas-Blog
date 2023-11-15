@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -6,12 +6,19 @@ import Form from 'react-bootstrap/Form';
 import UserType from '../types/auth';
 
 type LoginProps = {
-    logUserIn: (user:Partial<UserType>) => void
+    logUserIn: (user:Partial<UserType>) => void,
+    isLoggedIn: boolean
 }
 
-export default function Login({ logUserIn }: LoginProps) {
+export default function Login({ logUserIn, isLoggedIn }: LoginProps) {
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isLoggedIn){
+            navigate('/')
+        }
+    })
 
     const [userFormData, setUserFormData] = useState<Partial<UserType>>({username:'', password:''})
 
