@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Header from "./components/Header";
@@ -12,12 +12,30 @@ import AlertMessage from './components/AlertMessage';
 import CategoryType from './types/category';
 import UserType from './types/auth';
 
+import { getMe } from './lib/apiWrapper'
+
 export default function App() {
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('token') ? true : false);
     const [loggedInUser, setLoggedInUser] = useState<Partial<UserType>|null>(null)
     const [message, setMessage] = useState<string|null>(null);
     const [category, setCategory] = useState<CategoryType|null>(null);
+
+    useEffect( () => {
+        async function getLoggedInUser(){
+            if (isLoggedIn){
+                const token = localStorage.getItem('token') as string
+                const response = await getMe(token);
+                if (response.data){
+                    setLoggedInUser(response.data)
+                } else {
+                    console.error(response.error)
+                }
+            }
+        }
+
+        getLoggedInUser();
+    }, [isLoggedIn])
 
     const logUserIn = (user:Partial<UserType>):void => {
         setIsLoggedIn(true);
@@ -28,6 +46,7 @@ export default function App() {
     const logUserOut = ():void => {
         setIsLoggedIn(false);
         setLoggedInUser(null);
+        localStorage.removeItem('token');
         flashMessage('You have logged out', 'info');
     }
 
