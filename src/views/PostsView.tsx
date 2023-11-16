@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react';
 import Post from "../components/Post";
 import PostType from '../types/post';
+import { getAllPosts } from '../lib/apiWrapper';
 
 
 export default function PostsView() {
     const [posts, setPosts] = useState<PostType[]>([]);
 
     useEffect( () => {
-        fetch('https://kekambas-132-api.onrender.com/api/posts')
-            .then(res => res.json())
-            .then(data => setPosts(data))
+        async function fetchData(){
+            const response = await getAllPosts();
+            if (response.data){
+                setPosts(response.data);
+            }
+        };
+
+        fetchData()
     }, [])
 
     return (
