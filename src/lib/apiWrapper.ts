@@ -1,10 +1,12 @@
 import axios from 'axios';
 import PostType from '../types/post';
 import APIResponse from '../types/api';
+import UserType from '../types/auth';
 
 
 const base: string = 'https://kekambas-132-api.onrender.com/api'
 const postEndpoint: string = '/posts'
+const userEndpoint: string = '/users'
 
 
 const apiClientNoAuth = () => axios.create(
@@ -31,6 +33,24 @@ async function getAllPosts(): Promise<APIResponse<PostType[]>> {
 }
 
 
+async function createNewUser(newUserData:Partial<UserType>): Promise<APIResponse<UserType>> {
+    let data;
+    let error;
+    try{
+        const response = await apiClientNoAuth().post(userEndpoint, newUserData);
+        data = response.data
+    } catch(err) {
+        if (axios.isAxiosError(err)){
+            error = err.response?.data.error
+        } else {
+            error = 'Something went wrong'
+        }
+    }
+    return {data, error}
+}
+
+
 export {
     getAllPosts,
+    createNewUser,
 }

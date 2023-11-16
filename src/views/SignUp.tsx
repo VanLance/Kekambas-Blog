@@ -4,12 +4,15 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import UserType from '../types/auth';
+import { createNewUser } from '../lib/apiWrapper';
+import CategoryType from '../types/category';
 
 type SignUpProps = {
-    logUserIn: (user:Partial<UserType>) => void
+    logUserIn: (user:Partial<UserType>) => void,
+    flashMessage: (message:string, category:CategoryType) => void
 }
 
-export default function SignUp({ logUserIn }: SignUpProps) {
+export default function SignUp({ logUserIn, flashMessage }: SignUpProps) {
 
     const navigate = useNavigate();
 
@@ -28,10 +31,15 @@ export default function SignUp({ logUserIn }: SignUpProps) {
         setUserFormData({...userFormData, [e.target.name]: e.target.value})
     }
 
-    const handleFormSubmit = (e: React.FormEvent): void => {
+    const handleFormSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
-        logUserIn(userFormData);
-        navigate('/');
+        const response = await createNewUser(userFormData);
+        if (response.error){
+            flashMessage(response.error, 'danger')
+        } else {
+            logUserIn(response.data!);
+            navigate('/');
+        }
     }
 
     const validatePasswords = (password:string, confirmPassword:string):boolean => {
