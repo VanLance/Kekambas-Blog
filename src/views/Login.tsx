@@ -4,13 +4,16 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import UserType from '../types/auth';
+import { login } from '../lib/apiWrapper';
+import CategoryType from '../types/category';
 
 type LoginProps = {
     logUserIn: (user:Partial<UserType>) => void,
-    isLoggedIn: boolean
+    isLoggedIn: boolean,
+    flashMessage: (message:string, category:CategoryType) => void
 }
 
-export default function Login({ logUserIn, isLoggedIn }: LoginProps) {
+export default function Login({ logUserIn, isLoggedIn, flashMessage }: LoginProps) {
 
     const navigate = useNavigate();
 
@@ -26,10 +29,16 @@ export default function Login({ logUserIn, isLoggedIn }: LoginProps) {
         setUserFormData({...userFormData, [e.target.name]: e.target.value})
     }
 
-    const handleFormSubmit = (e: React.FormEvent): void => {
+    const handleFormSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
-        logUserIn(userFormData);
-        navigate('/');
+        const response = await login(userFormData.username!, userFormData.password!)
+        if (response.error){
+            flashMessage(response.error, 'warning')
+        } else {
+            localStorage.setItem('token', response.data?.token as string)
+            logUserIn(userFormData);
+            navigate('/');
+        }
     }
 
     return (
