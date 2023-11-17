@@ -4,14 +4,17 @@ import PostType from '../types/post';
 import { getAllPosts } from '../lib/apiWrapper';
 import PostForm from '../components/PostForm';
 import Button from 'react-bootstrap/Button';
+import CategoryType from '../types/category';
 
 type PostsViewProps = {
-    isLoggedIn: boolean
+    isLoggedIn: boolean,
+    flashMessage: (message:string, category: CategoryType) => void
 }
 
-export default function PostsView({ isLoggedIn }: PostsViewProps) {
+export default function PostsView({ isLoggedIn, flashMessage }: PostsViewProps) {
     const [posts, setPosts] = useState<PostType[]>([]);
     const [displayForm, setDisplayForm] = useState(false);
+    const [formSubmitted, setFormSubmitted] = useState(false);
 
     useEffect( () => {
         async function fetchData(){
@@ -22,7 +25,7 @@ export default function PostsView({ isLoggedIn }: PostsViewProps) {
         };
 
         fetchData()
-    }, [])
+    }, [formSubmitted])
 
     return (
         <>
@@ -31,7 +34,8 @@ export default function PostsView({ isLoggedIn }: PostsViewProps) {
                 {displayForm ? 'Hide Form' : '+ Create New Post'}
             </Button>}
             
-            {displayForm && <PostForm />}
+            {displayForm && 
+            <PostForm flashMessage={flashMessage} setDisplay={setDisplayForm} setForm={setFormSubmitted} toggle={formSubmitted} />}
             {posts.map((post) => (
                 <Post key={post.id} post={post} />
             ))}
