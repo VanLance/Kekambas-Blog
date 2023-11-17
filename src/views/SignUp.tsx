@@ -8,7 +8,7 @@ import { createNewUser, login } from '../lib/apiWrapper';
 import CategoryType from '../types/category';
 
 type SignUpProps = {
-    logUserIn: (user:Partial<UserType>) => void,
+    logUserIn: (user:UserType) => void,
     flashMessage: (message:string, category:CategoryType) => void
 }
 

@@ -5,13 +5,15 @@ import { getAllPosts } from '../lib/apiWrapper';
 import PostForm from '../components/PostForm';
 import Button from 'react-bootstrap/Button';
 import CategoryType from '../types/category';
+import UserType from '../types/auth';
 
 type PostsViewProps = {
     isLoggedIn: boolean,
-    flashMessage: (message:string, category: CategoryType) => void
+    flashMessage: (message:string, category: CategoryType) => void,
+    currentUser: UserType|null
 }
 
-export default function PostsView({ isLoggedIn, flashMessage }: PostsViewProps) {
+export default function PostsView({ isLoggedIn, flashMessage, currentUser }: PostsViewProps) {
     const [posts, setPosts] = useState<PostType[]>([]);
     const [displayForm, setDisplayForm] = useState(false);
     const [formSubmitted, setFormSubmitted] = useState(false);
@@ -37,7 +39,7 @@ export default function PostsView({ isLoggedIn, flashMessage }: PostsViewProps) 
             {displayForm && 
             <PostForm flashMessage={flashMessage} setDisplay={setDisplayForm} setForm={setFormSubmitted} toggle={formSubmitted} />}
             {posts.map((post) => (
-                <Post key={post.id} post={post} />
+                <Post key={post.id} post={post} currentUser={currentUser} />
             ))}
         </>
     );
