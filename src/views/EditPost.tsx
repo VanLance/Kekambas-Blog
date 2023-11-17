@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PostType from '../types/post';
-import { getPost, editPost } from '../lib/apiWrapper';
+import { getPost, editPost, deletePost } from '../lib/apiWrapper';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
 import UserType from '../types/auth';
 import CategoryType from '../types/category';
 
@@ -19,6 +20,10 @@ export default function EditPost({ currentUser, flashMessage }: EditPostProps) {
     const navigate = useNavigate();
 
     const [postToEdit, setPostToEdit] = useState<PostType|null>(null);
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     useEffect(() => {
         async function getPostToEdit(){
@@ -59,6 +64,17 @@ export default function EditPost({ currentUser, flashMessage }: EditPostProps) {
         }
     }
 
+    const handleDeletePost = async () => {
+        const token = localStorage.getItem('token') || ''
+        const response = await deletePost(token, postId!);
+        if (response.error){
+            flashMessage(response.error, 'danger');
+        } else {
+            flashMessage(response.data?.success!, 'primary');
+            navigate('/posts');
+        }
+    }
+
     return (
         <>
             <h1 className="text-center">Edit {postToEdit?.title}</h1>
@@ -71,11 +87,27 @@ export default function EditPost({ currentUser, flashMessage }: EditPostProps) {
                             <Form.Label>Edit Post Body</Form.Label>
                             <Form.Control name='body' value={postToEdit.body} onChange={handleInputChange} />
                             <Button variant='success' className='mt-3 w-50' type='submit'>Edit Post</Button>
-                            <Button variant='danger' className='mt-3 w-50'>Delete Post</Button>
+                            <Button variant='danger' className='mt-3 w-50' onClick={handleShow}>Delete Post</Button>
                         </Form>
                     </Card.Body>
                 </Card>
             )}
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete {postToEdit?.title}?</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete {postToEdit?.title}? This action cannot be undone!
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button variant="danger" onClick={handleDeletePost}>
+                        Delete Post
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     )
 }
