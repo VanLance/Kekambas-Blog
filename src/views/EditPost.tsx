@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PostType from '../types/post';
-import { getPost } from '../lib/apiWrapper';
+import { getPost, editPost } from '../lib/apiWrapper';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
@@ -43,17 +43,33 @@ export default function EditPost({ currentUser, flashMessage }: EditPostProps) {
         }
     }, [postToEdit, currentUser])
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        setPostToEdit({...postToEdit!, [e.target.name]: e.target.value})
+    }
+
+    const handleFormSubmit = async (e:React.FormEvent) => {
+        e.preventDefault();
+        const token = localStorage.getItem('token') || ''
+        const response = await editPost(token, postId!, postToEdit!);
+        if (response.error){
+            flashMessage(response.error, 'danger')
+        } else {
+            flashMessage(`${response.data?.title} has been edited`, 'success');
+            navigate('/posts')
+        }
+    }
+
     return (
         <>
             <h1 className="text-center">Edit {postToEdit?.title}</h1>
             {postToEdit && (
                 <Card>
                     <Card.Body>
-                        <Form>
+                        <Form onSubmit={handleFormSubmit}>
                             <Form.Label>Edit Post Title</Form.Label>
-                            <Form.Control name='title' value={postToEdit.title} />
+                            <Form.Control name='title' value={postToEdit.title} onChange={handleInputChange} />
                             <Form.Label>Edit Post Body</Form.Label>
-                            <Form.Control name='body' value={postToEdit.body} />
+                            <Form.Control name='body' value={postToEdit.body} onChange={handleInputChange} />
                             <Button variant='success' className='mt-3 w-50' type='submit'>Edit Post</Button>
                             <Button variant='danger' className='mt-3 w-50'>Delete Post</Button>
                         </Form>

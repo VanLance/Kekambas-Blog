@@ -137,6 +137,23 @@ async function getPost(postId:string): Promise<APIResponse<PostType>> {
 }
 
 
+async function editPost(token:string, postId:string, editedPostData:PostType): Promise<APIResponse<PostType>> {
+    let data;
+    let error;
+    try{
+        const response = await apiClientTokenAuth(token).put(postEndpoint + '/' + postId, editedPostData);
+        data = response.data;
+    } catch(err) {
+        if (axios.isAxiosError(err)){
+            error = err.response?.data.error
+        } else {
+            error = 'Something went wrong'
+        }
+    }
+    return {data, error}
+}
+
+
 export {
     getAllPosts,
     createNewUser,
@@ -144,4 +161,5 @@ export {
     getMe,
     createPost,
     getPost,
+    editPost,
 }
